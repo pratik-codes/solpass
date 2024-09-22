@@ -7,7 +7,7 @@ const features = [
   {
     name: "Decentralized Security",
     description:
-      "Solpass leverages Solana's blockchain technology, ensuring that only you have access to your passwords, eliminating the risks of centralized storage.",
+      "SolPass leverages Solana's blockchain technology, ensuring that only you have access to your passwords, eliminating the risks of centralized storage.",
     icon: Computer,
   },
   {
@@ -35,7 +35,7 @@ export default function SideBySide() {
                 The Decentralized Password Manager
               </p>
               <p className="mt-6 leading-8 text-gray-600 dark:text-gray-400">
-                It's secure, private, and easy to use. With Solpass, you can manage your passwords with unmatched security and privacy. Experience the future of password management today.
+                It's secure, private, and easy to use. With SolPass, you can manage your passwords with unmatched security and privacy. Experience the future of password management today.
               </p>
               <dl className="mt-10 max-w-xl space-y-8 leading-7 text-gray-600 lg:max-w-none">
                 {features.map((feature) => (

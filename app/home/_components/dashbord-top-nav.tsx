@@ -41,7 +41,7 @@ export default function DashboardTopNav({ children }: { children: ReactNode }) {
                     height={35}
                     className="mr-2"
                   />
-                  Solpass
+                  SolPass
                 </div>
               </Link>
             </SheetHeader>

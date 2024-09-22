@@ -29,7 +29,7 @@ export default function DashboardSideBar() {
                     height={35}
                     className="mr-2"
                   />
-                  Solpass
+                  SolPass
                 </div>
           </Link>
         </div>

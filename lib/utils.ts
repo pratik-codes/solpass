@@ -250,3 +250,7 @@ export const copyToClipboard = (textToCopy: string) => {
       console.error("Failed to copy: ", err);
     });
 };
+
+export const ValidateSeedPhrase = (seedPhrase: string) => {
+  return bip39.validateMnemonic(seedPhrase);
+}

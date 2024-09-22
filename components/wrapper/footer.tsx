@@ -23,11 +23,11 @@ export default function Footer() {
                         <div className="mt-8 space-y-4 lg:mt-0">
                             <div>
                                 <h3 className="text-2xl font-medium">
-                                    Stay Updated with Solpass
+                                    Stay Updated with SolPass
                                 </h3>
                                 <p className="mt-4 max-w-lg">
                                     Sign up for our newsletter to get the latest updates on
-                                    Solpass and blockchain security features.
+                                    SolPass and blockchain security features.
                                 </p>
                             </div>
                             <form
@@ -52,7 +52,7 @@ export default function Footer() {
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
                                         <a
-                                            href="https://twitter.com/solpass"
+                                            href="https://twitter.com/SolPass"
                                             target="_blank"
                                             className="transition hover:opacity-75">
                                             Twitter
@@ -60,7 +60,7 @@ export default function Footer() {
                                     </li>
                                     <li>
                                         <a
-                                            href="https://www.youtube.com/@solpass"
+                                            href="https://www.youtube.com/@SolPass"
                                             target="_blank"
                                             className="transition hover:opacity-75">
                                             YouTube
@@ -114,7 +114,7 @@ export default function Footer() {
                             </ul>
 
                             <p className="mt-8 text-xs">
-                                &copy; 2024 Solpass. All rights reserved.
+                                &copy; 2024 SolPass. All rights reserved.
                             </p>
                         </div>
                     </div>

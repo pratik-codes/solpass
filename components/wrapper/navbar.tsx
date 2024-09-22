@@ -95,7 +95,7 @@ export default function NavBar() {
                                     height={35}
                                     className="mr-2"
                                 />
-                                Solpass
+                                SolPass
                             </div>
                             <span className="sr-only">Home</span>
                         </Link>

@@ -79,6 +79,13 @@ export default function Home() {
   const [currentPassword, setCurrentPassword] = useState<any>({})
   const [data, setData] = useState<any>({})
 
+  useEffect(() => {
+    if (sessionStorage.getItem('pbk') === null || sessionStorage.getItem('pk') === null) {
+      document.cookie = "pk=false";
+      window.location.reload();
+    }
+  }, [])
+
   const addLink = (link: Link) => {
     const newData = {
       ...data,
@@ -202,13 +209,20 @@ export default function Home() {
               editLink={(id: string, link: Link) => editLink(id, link)}
             />
           </div>
-          {data?.vault?.passwords &&
+          {data?.vault?.passwords ? (
             data?.vault?.passwords
-              .filter((vault: any) =>
-                vault.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                vault.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                vault.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                vault.url.toLowerCase().includes(searchTerm.toLowerCase()) 
+              .filter(
+                (vault: any) =>
+                  vault.title
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                  vault.userName
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                  vault.email
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                  vault.url.toLowerCase().includes(searchTerm.toLowerCase())
               )
               .map((vault: any, index: any) => (
                 <VaultCard
@@ -224,7 +238,12 @@ export default function Home() {
                   currentPassword={currentPassword}
                   deleteLink={(id: string) => deleteLink(id)}
                 />
-              ))}
+              ))
+          ) : (
+            <div className="mx-auto p-4 rounded-xl text-lg text-end font-bold">
+              No data :( Add a new password here ☝️
+            </div>
+          )}
         </div>
       </div>
       <div className="w-8/12 p-4">
@@ -247,12 +266,7 @@ export default function Home() {
         {!currentPassword.id && (
           <div className="flex flex-col items-center justify-center mt-[8rem]">
             <div className="flex flex-col space-y-3">
-              <div className="text-lg font-bold">NO DATA SELECTED</div>
-              <Skeleton className="h-[225px] w-[350px] rounded-xl" />
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-[350px]" />
-                <Skeleton className="h-4 w-[300px]" />
-              </div>
+              <div className="text-2xl font-bold">NO DATA SELECTED 🚫</div>
             </div>
           </div>
         )}

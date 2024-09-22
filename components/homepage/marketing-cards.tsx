@@ -84,10 +84,10 @@ const SpringAnimatedFeatures = () => {
     <div className="flex flex-col justify-center items-center lg:w-[75%]">
       <div className='flex flex-col mb-[3rem]'>
         <h2 className={`${TITLE_TAILWIND_CLASS} mt-2 font-semibold tracking-tight dark:text-white text-gray-900`}>
-          Nextjs Starter Kit: Built with the best
+          SolPass: Built with the best
         </h2>
         <p className="mx-auto max-w-[500px] text-gray-600 dark:text-gray-400 text-center mt-2 ">
-          Your customers deserve a product built with the best technologies in our Nextjs Starter Kit
+          Your customers deserve a product built with the best technologies in our SolPass
         </p>
       </div>
       <div className="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

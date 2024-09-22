@@ -10,6 +10,7 @@ import {
   generateKeysFromSeedPhrase,
   encryptData,
   validatePin,
+  ValidateSeedPhrase,
 } from "@/lib/utils";
 import { toast } from "sonner";
 import { Clipboard } from "lucide-react";
@@ -80,7 +81,6 @@ export default function AnonyomousAuth({ type }: { type: string }) {
     toast("signup succeded");
 
     setStep("done");
-    console.log("success", pin);
   };
 
   // as the name suggests its the login handler
@@ -90,20 +90,11 @@ export default function AnonyomousAuth({ type }: { type: string }) {
     const pin = e.target[1].value;
 
     // validate the seed phrase
-    if (seed === "") {
-      toast.error("Seed phrase is required");
-      return;
-    }
-
-    // checking valid seed phrases
-    const seedPhrases = seed.split(" ");
-    if (seedPhrases.length !== 12) {
+    if (ValidateSeedPhrase(seed)) {
       toast.error("Invalid seed phrase");
-      return;
     }
 
     const keys = generateKeysFromSeedPhrase(seed);
-
     // save the pin
     const isSaveValid = validatePin(pin, keys?.publicKey, keys?.privateKey);
     if (!isSaveValid) {
@@ -361,7 +352,6 @@ export default function AnonyomousAuth({ type }: { type: string }) {
             </p>
             <form
               onSubmit={(e) => {
-                console.log("clicked");
                 e.preventDefault();
                 generateSeedPhrases();
               }}>
