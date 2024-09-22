@@ -34,13 +34,13 @@ const HeroSection = () => {
                 Get started
                 <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 duration-300" />
               </Link>
-              <Link
+              {/* <Link
                 href="https://github.com/pratik-codes/SolPass"
                 className="rounded-xl inline-flex w-full justify-center items-center gap-x-2 border border-zinc-800 hover:border-zinc-600 bg-zinc-950 hover:text-zinc-100 duration-200 sm:w-auto py-4 px-10"
                 target="_blank">
                 <GithubIcon className="w-5 h-5" />
                 Star on GitHub
-              </Link>
+              </Link> */}
             </div>
           </HeroAnimated>
         </div>
