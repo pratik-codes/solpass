@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { uuid } from 'uuidv4';
 import { Input } from '@/components/ui/input'
 import PasswordEditAdd from "@/components/dashboard/add-edit-password";
-import { encryptMessage, decryptMessage, decryptPrivateKey } from '@/lib/utils';
+import { decryptData, decryptPrivateKey, encryptData } from "@/lib/utils";
 
 
 const mockData = {
@@ -77,10 +77,10 @@ export default function Home() {
   })
   const [searchTerm, setSearchterm] = useState('')
   const [currentPassword, setCurrentPassword] = useState<any>({})
-  const [data, setData] = useState<any>(mockData)
+  const [data, setData] = useState<any>({})
 
   const addLink = (link: Link) => {
-    setData({
+    const newData = {
       ...data,
       vault: {
         ...data.vault,
@@ -98,11 +98,13 @@ export default function Home() {
           },
         ],
       },
-    });
-    encryptAndStoreData(data)
+    };
+    setData(newData);
+    encryptAndStoreData(newData)
   }
 
-  const editLink = (id: string, link: Link) => { setData({
+  const editLink = (id: string, link: Link) => {
+    const newData = {
       ...data,
       vault: {
         ...data.vault,
@@ -122,23 +124,27 @@ export default function Home() {
           return password;
         }),
       },
-    });
+    };
+    setData(newData);
     setCurrentPassword({ ...currentPassword, ...link })
-    encryptAndStoreData(data)
+    encryptAndStoreData(newData);
   }
 
   const deleteLink = (id: string) => {
-    setData({
+    const newData = {
       ...data,
       vault: {
         ...data.vault,
-        passwords: data.vault.passwords.filter((password: any) => password.id !== id),
+        passwords: data.vault.passwords.filter(
+          (password: any) => password.id !== id
+        ),
       },
-    });
+    };
+    setData(newData);
     if (currentPassword.id === id) {
       setCurrentPassword({})
     }
-    encryptAndStoreData(data)
+    encryptAndStoreData(newData);
   }
 
   const setCurrentPasswordHandler = (id: string) => {
@@ -151,27 +157,30 @@ export default function Home() {
 
   const encryptAndStoreData = (data: any) => {
     setTimeout(() => {
-      const decryptedPublicKey = decryptPrivateKey(String(localStorage.getItem('pbk')) || "", process.env.NEXT_PUBLIC_ENCRYPTION_KEY || "");
-      const decryptedPrivateKey = decryptPrivateKey(String(localStorage.getItem('pk')) || "", process.env.NEXT_PUBLIC_ENCRYPTION_KEY || "");
-      const ecryptedData = encryptMessage(
-        JSON.stringify(data),
-        decryptedPublicKey || "",
-        decryptedPrivateKey || ""
+      const decryptedPublicKey = decryptPrivateKey(
+        String(sessionStorage.getItem("pbk")) || "",
+        process.env.NEXT_PUBLIC_ENCRYPTION_KEY || ""
       );
+     const ecryptedData = encryptData(JSON.stringify(data));
       console.log("setting data", { ecryptedData, data })
       localStorage.setItem('data', ecryptedData)
     }, 1000)
   }
 
   useEffect(() => {
-    const decryptedPublicKey = decryptPrivateKey(String(localStorage.getItem('pbk')) || "", process.env.NEXT_PUBLIC_ENCRYPTION_KEY || "");
-    const decryptedPrivateKey = decryptPrivateKey(String(localStorage.getItem('pk')) || "", process.env.NEXT_PUBLIC_ENCRYPTION_KEY || "");
-    const message = decryptMessage(
-      String(localStorage.getItem("data")) || "",
-      decryptedPublicKey || "",
-      decryptedPrivateKey || ""
+    console.log(
+      sessionStorage.getItem("pbk"),
+      sessionStorage.getItem("pk"),
+      localStorage.getItem("data")
     );
-    if (message) {
+    const decryptedPrivateKey = decryptPrivateKey(
+      String(sessionStorage.getItem("pk")) || "",
+      process.env.NEXT_PUBLIC_ENCRYPTION_KEY || ""
+    );
+    console.log({ decryptedPrivateKey })
+    const message = decryptData(localStorage.getItem("data") || "");
+    console.log({ message })
+    if (message !== "") {
       setData(JSON.parse(message))
     }
   }, [])

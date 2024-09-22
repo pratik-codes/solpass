@@ -8,8 +8,8 @@ import {
   generateSeedPhrase,
   saveKeys,
   generateKeysFromSeedPhrase,
-  encryptMessage,
-  validatePin
+  encryptData,
+  validatePin,
 } from "@/lib/utils";
 import { toast } from "sonner";
 import { Clipboard } from "lucide-react";
@@ -37,7 +37,6 @@ export default function AnonyomousAuth({ type }: { type: string }) {
     setSeedPhrases(seed.split(" "));
     setKeys(generateKeysFromSeedPhrase(seed));
     // get the encryption key from the environment variable
-    console.log("encryptionKey", process.env.NEXT_PUBLIC_ENCRYPTION_KEY);
     const success = saveKeys(seed, process.env.NEXT_PUBLIC_ENCRYPTION_KEY);
     if (!success) {
       toast("Failed to save keys");
@@ -69,7 +68,7 @@ export default function AnonyomousAuth({ type }: { type: string }) {
     }
 
     // saving the pin after encrypting it to avoid any security issues
-    const encryptedPin = encryptMessage(pin, keys?.publicKey, keys?.privateKey);
+    const encryptedPin = encryptData(pin);
     if (encryptedPin === "") {
       toast.error("Failed to save pin, try again...");
       return;

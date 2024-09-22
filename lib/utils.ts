@@ -1,4 +1,5 @@
 import clsx, { ClassValue } from "clsx";
+import * as forge from 'node-forge';
 import { twMerge } from "tailwind-merge";
 import * as bip39 from "bip39";
 import { Keypair } from "@solana/web3.js";
@@ -8,6 +9,8 @@ import naclUtil from "tweetnacl-util";
 import crypto from "crypto";
 import bs58 from "bs58";
 import { toast } from "sonner";
+
+const DATA_ENCRYPTION_KEY = process.env.NEXT_PUBLIC_ENCRYPTION_KEY || "";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -58,132 +61,69 @@ export const generateKeysFromSeedPhrase = (
   };
 };
 
-/**
- * Encrypts a message using the user's public and private keys (as base58 strings).
- *
- * @param {string} message - The message to encrypt (normal string)
- * @param {string} userPublicKeyBase58 - The user's public key as a base58 encoded string
- * @param {string} userPrivateKeyBase58 - The user's private key as a base58 encoded string
- * @returns {string} - The base58 encoded encrypted message with nonce
- */
-export const encryptMessage = (
-  message: string,
-  userPublicKeyBase58: string | undefined,
-  userPrivateKeyBase58: string | undefined,
-): string => {
-  // console.log("userPublicKeyBase58", userPublicKeyBase58);
-  // console.log("userPrivateKeyBase58", userPrivateKeyBase58);
-  // console.log("message", message);
-
-  if (!userPublicKeyBase58 || !userPrivateKeyBase58) {
-    return "";
-  }
-
+// Encrypt data using the public key
+export function encryptData(data: string): string {
   try {
-    // Convert the message string to Uint8Array
-    const messageUint8 = new TextEncoder().encode(message);
+    // convert the data to buffer
+    const dataBuffer = Buffer.from(data);
 
-    // Decode the Base58-encoded public and private keys
-    let userPublicKey = new Uint8Array(bs58.decode(userPublicKeyBase58));
-    let userPrivateKey = new Uint8Array(bs58.decode(userPrivateKeyBase58));
-
-    // console.log({ userPublicKey, userPrivateKey });
-
-    // If the private key is 64 bytes, use only the first 32 bytes
-    if (userPrivateKey.length === 64) {
-      userPrivateKey = userPrivateKey.slice(0, 32);
-    }
-
-    // if the public key is 64 bytes, use only the first 32 bytes
-    if (userPublicKey.length === 64) {
-      userPublicKey = userPublicKey.slice(0, 32);
-    }
-
-    // console.log({ userPublicKey, userPrivateKey });
-
-    // Ensure the keys are 32 bytes long
-    if (userPublicKey.length !== 32 || userPrivateKey.length !== 32) {
-      throw new Error(
-        "Invalid key size: Public and private keys must be 32 bytes long",
-      );
-    }
-
-    // Generate a random nonce
-    const nonce = nacl.randomBytes(nacl.box.nonceLength);
-
-    // Encrypt the message
-    const encrypted = nacl.box(
-      messageUint8,
-      nonce,
-      userPublicKey,
-      userPrivateKey,
+    // Generate a random initialization vector (IV)
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv(
+      "aes-256-cbc",
+      Buffer.from(DATA_ENCRYPTION_KEY, "hex"),
+      iv,
     );
 
-    // Combine nonce and encrypted message
-    const fullMessage = new Uint8Array(nonce.length + encrypted.length);
-    fullMessage.set(nonce);
-    fullMessage.set(encrypted, nonce.length);
+    // Encrypt the private key
+    const encrypted = Buffer.concat([
+      cipher.update(dataBuffer),
+      cipher.final(),
+    ]);
 
-    // Encode to Base58
-    return bs58.encode(fullMessage);
-  } catch (error) {
-    // console.error("Encryption failed:", error);
-    return "";
+    // Combine IV and encrypted data
+    const fullEncryptedData = Buffer.concat([iv, encrypted]);
+
+    return bs58.encode(fullEncryptedData);
   }
-};
+  catch (error) {
+    console.error('Encryption failed:', error);
+    return '';
+  }
+}
 
-/**
- * Decrypts an encrypted message using the user's private key.
- *
- * @param {string} encryptedMessage - The base64 encoded encrypted message with nonce
- * @param {string} userPrivateKeyBase58 - The Base58 encoded user's private key
- * @param {string} userPublicKeyBase58 - The Base58 encoded user's public key
- * @returns {string} - The decrypted message
- */
-export const decryptMessage = (
-  encryptedMessage: string,
-  userPrivateKeyBase58: string,
-  userPublicKeyBase58: string,
-): string => {
+// Decrypt data using the private key
+export function decryptData(encryptedDataBase58: string): string {
   try {
-    // Decode Base58 keys
-    let userPrivateKey = new Uint8Array(bs58.decode(userPrivateKeyBase58));
-    const userPublicKey = new Uint8Array(bs58.decode(userPublicKeyBase58));
+    // Decode the Base58-encoded encrypted data
+    const fullEncryptedData = bs58.decode(encryptedDataBase58);
 
-    // Ensure the keys are 32 bytes long
-    if (userPublicKey.length !== 32 || userPrivateKey.length !== 32) {
-      console.log(userPublicKey.length, userPrivateKey.length);
-      throw new Error(
-        "Invalid key size: Public and private keys must be 32 bytes long",
-      );
-    }
+    // Extract IV and encrypted data
+    const iv = fullEncryptedData.slice(0, 16); // First 16 bytes are IV
+    const encrypted = fullEncryptedData.slice(16);
 
-    // Decode the encrypted message from Base58
-    const messageWithNonce = new Uint8Array(bs58.decode(encryptedMessage));
-
-    // Extract nonce and encrypted message
-    const nonce = messageWithNonce.slice(0, nacl.box.nonceLength);
-    const encrypted = messageWithNonce.slice(nacl.box.nonceLength);
-
-    // Decrypt the message
-    const decrypted = nacl.box.open(
-      encrypted,
-      nonce,
-      userPublicKey,
-      userPrivateKey,
+    const decipher = crypto.createDecipheriv(
+      "aes-256-cbc",
+      Buffer.from(DATA_ENCRYPTION_KEY, "hex"),
+      iv,
     );
 
-    if (!decrypted) {
-      throw new Error("Decryption failed");
-    }
+    // Decrypt the private key
+    const decrypted = Buffer.concat([
+      decipher.update(encrypted),
+      decipher.final(),
+    ]);
 
-    // Convert decrypted Uint8Array back to a UTF-8 string
-    return new TextDecoder().decode(decrypted);
+    console.log({ decrypted });
+
+
+    // return the buffer in plain text
+    return decrypted.toString();
   } catch (error) {
-    console.error("Decryption failed:", error);
+    // console.error('Decryption failed:', error);
     return "";
   }
-};
+}
 
 /**
  * Encrypts the private key using AES-CBC.
@@ -223,7 +163,7 @@ export const encryptPrivateKey = (
 /**
  * Decrypts the private key using AES-CBC.
  *
- * @param {string} encryptedPrivateKey - The base64 encoded encrypted private key with IV
+ * @param {string} encryptedPrivateKey - The Base58 encoded encrypted private key with IV
  * @param {string} encryptionKey - The key used for decryption (from environment variable)
  * @returns {string | null} - The decrypted private key or null if decryption fails
  */
@@ -232,8 +172,8 @@ export const decryptPrivateKey = (
   encryptionKey: string,
 ): string | null => {
   try {
-    // Decode the base64-encoded encrypted data
-    const fullEncryptedData = Buffer.from(encryptedPrivateKey, "base64");
+    // Decode the Base58-encoded encrypted data
+    const fullEncryptedData = bs58.decode(encryptedPrivateKey);
 
     // Extract IV and encrypted data
     const iv = fullEncryptedData.slice(0, 16); // First 16 bytes are IV
@@ -251,12 +191,15 @@ export const decryptPrivateKey = (
       decipher.final(),
     ]);
 
-    return decrypted.toString("utf8");
+    // Re-encode the decrypted private key to Base58
+    return bs58.encode(decrypted);
   } catch (error) {
     // console.error('Decryption failed:', error);
     return null;
   }
 };
+
+
 
 // TODO: move to AES-CBC mode
 export const saveKeys = (seed: string, encryptionKey: string | undefined) => {
@@ -287,7 +230,7 @@ export const validatePin = (enteredPin: string, pbk: string, pk: string) => {
     return false;
   }
 
-  const currentPin = decryptMessage(currentEncryptedPin, pk, pbk);
+  const currentPin = decryptData(currentEncryptedPin);
 
   if (currentPin === enteredPin) {
     return true;
