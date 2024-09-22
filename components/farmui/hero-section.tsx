@@ -29,13 +29,13 @@ const HeroSection = () => {
             descriptionClassName="mx-auto text-zinc-400 text-center text-md lg:max-w-2xl md:py-5">
             <div className="flex flex-wrap items-center justify-center  gap-3">
               <Link
-                href="/components"
+                href="/home"
                 className="rounded-xl inline-flex text-center group items-center w-full justify-center bg-gradient-to-tr from-zinc-300/5 via-gray-400/5 to-transparent bg-transparent  border-input border-[1px] hover:bg-transparent/10 transition-colors sm:w-auto py-4 px-10">
                 Get started
                 <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 duration-300" />
               </Link>
               <Link
-                href="https://github.com/Kinfe123/farm-ui"
+                href="https://github.com/pratik-codes/SolPass"
                 className="rounded-xl inline-flex w-full justify-center items-center gap-x-2 border border-zinc-800 hover:border-zinc-600 bg-zinc-950 hover:text-zinc-100 duration-200 sm:w-auto py-4 px-10"
                 target="_blank">
                 <GithubIcon className="w-5 h-5" />

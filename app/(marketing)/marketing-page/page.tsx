@@ -39,7 +39,7 @@ export default async function MarketingPage() {
           <Link href="/dashboard" className="mt-2">
             <Button size="lg">Get Started</Button>
           </Link>
-          <Link href="/dashboard" className="mt-2">
+          <Link href="/home" className="mt-2">
             <Button size="lg" variant="outline">Get Started</Button>
           </Link>
         </div>
