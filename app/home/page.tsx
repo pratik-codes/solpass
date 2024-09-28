@@ -11,63 +11,63 @@ import { decryptData, decryptPrivateKey, encryptData } from "@/lib/utils";
 
 
 const mockData = {
-    vault: {
-      title: 'Main',
-      desc: 'Manage your social media accounts',
-      icon: 'Vault',
-      passwords: [
-        {
-          id: uuid(),
-          title: 'X',
-          url: 'https://twitter.com',
-          userName: 'user',
-          email: 'johdoe@email.com',
-          notes: 'This is a note',
-          type: 'social',
-          password: 'STRONG_PASSWORD', 
-        },
-        {
-          id: uuid(),
-          title: 'Facebook',
-          url: 'https://facebook.com',
-          userName: 'user',
-          email: 'johdoe@email.com',
-          notes: 'This is a note',
-          type: 'social',
-          password: 'STRONG_PASSWORD', 
-        },
-        {
-          id: uuid(),
-          title: 'Instagram',
-          url: 'https://instagram.com',
-          userName: 'user',
-          email: 'johdoe@email.com',
-          notes: 'This is a note',
-          type: 'social',
-          password: 'STRONG_PASSWORD', 
-        },
-        {
-          id: uuid(),
-          title: 'Github',
-          url: 'https://github.com/',
-          userName: 'user',
-          email: 'johdoe@email.com',
-          notes: 'This is a note',
-          password: 'STRONG_PASSWORD', 
-          type: 'social',
-        },
-      ],
-    },
-  }
+  vault: {
+    title: 'Main',
+    desc: 'Manage your social media accounts',
+    icon: 'Vault',
+    passwords: [
+      {
+        id: uuid(),
+        title: 'X',
+        url: 'https://twitter.com',
+        userName: 'user',
+        email: 'johdoe@email.com',
+        notes: 'This is a note',
+        type: 'social',
+        password: 'STRONG_PASSWORD',
+      },
+      {
+        id: uuid(),
+        title: 'Facebook',
+        url: 'https://facebook.com',
+        userName: 'user',
+        email: 'johdoe@email.com',
+        notes: 'This is a note',
+        type: 'social',
+        password: 'STRONG_PASSWORD',
+      },
+      {
+        id: uuid(),
+        title: 'Instagram',
+        url: 'https://instagram.com',
+        userName: 'user',
+        email: 'johdoe@email.com',
+        notes: 'This is a note',
+        type: 'social',
+        password: 'STRONG_PASSWORD',
+      },
+      {
+        id: uuid(),
+        title: 'Github',
+        url: 'https://github.com/',
+        userName: 'user',
+        email: 'johdoe@email.com',
+        notes: 'This is a note',
+        password: 'STRONG_PASSWORD',
+        type: 'social',
+      },
+    ],
+  },
+}
 
 export interface Link {
-    title: string,
-    url: string,
-    userName: string,
-    email: string,
-    notes: string,
-    type: string,
-    password: string,
+  title: string,
+  url: string,
+  userName: string,
+  email: string,
+  notes: string,
+  type: string,
+  password: string,
 }
 
 export default function Home() {
@@ -87,12 +87,13 @@ export default function Home() {
   }, [])
 
   const addLink = (link: Link) => {
+    const oldPasswords = data?.vault?.passwords || []
     const newData = {
       ...data,
       vault: {
         ...data.vault,
         passwords: [
-          ...data.vault.passwords,
+          ...oldPasswords,
           {
             id: uuid(),
             title: link.title,
@@ -111,10 +112,11 @@ export default function Home() {
   }
 
   const editLink = (id: string, link: Link) => {
+    const oldVault = data?.vault || {};
     const newData = {
       ...data,
       vault: {
-        ...data.vault,
+        ...oldVault,
         passwords: data?.vault?.passwords.map((password: any) => {
           if (password.id === id) {
             return {
@@ -159,7 +161,7 @@ export default function Home() {
       (password: any) => password.id === id
     );
 
-    setCurrentPassword({...selectedPassword})
+    setCurrentPassword({ ...selectedPassword })
   }
 
   const encryptAndStoreData = (data: any) => {
@@ -168,7 +170,7 @@ export default function Home() {
         String(sessionStorage.getItem("pbk")) || "",
         process.env.NEXT_PUBLIC_ENCRYPTION_KEY || ""
       );
-     const ecryptedData = encryptData(JSON.stringify(data));
+      const ecryptedData = encryptData(JSON.stringify(data));
       console.log("setting data", { ecryptedData, data })
       localStorage.setItem('data', ecryptedData)
     }, 1000)
