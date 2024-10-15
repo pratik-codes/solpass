@@ -1,14 +1,13 @@
 import clsx, { ClassValue } from "clsx";
-import * as forge from 'node-forge';
 import { twMerge } from "tailwind-merge";
 import * as bip39 from "bip39";
 import { Keypair } from "@solana/web3.js";
 import { derivePath } from "ed25519-hd-key";
-import nacl from "tweetnacl";
-import naclUtil from "tweetnacl-util";
 import crypto from "crypto";
 import bs58 from "bs58";
 import { toast } from "sonner";
+import nacl from "tweetnacl";
+import naclUtil from "tweetnacl-util";
 
 const DATA_ENCRYPTION_KEY = process.env.NEXT_PUBLIC_ENCRYPTION_KEY || "";
 
@@ -60,6 +59,42 @@ export const generateKeysFromSeedPhrase = (
     publicKey: keypair.publicKey.toBase58(), // Public key in Base58 encoding
   };
 };
+
+export function encryptDataWithPublicKey(data: string, publicKey: string) {
+  const key = bs58.decode(publicKey);
+  const nonce = nacl.randomBytes(nacl.secretbox.nonceLength);
+  const messageUint8 = naclUtil.decodeUTF8(data);
+  const encryptedMessage = nacl.secretbox(messageUint8, nonce, key);
+  const fullMessage = new Uint8Array(nonce.length + encryptedMessage.length);
+  fullMessage.set(nonce);
+  fullMessage.set(encryptedMessage, nonce.length);
+  return naclUtil.encodeBase64(fullMessage);
+}
+
+export function decryptDataWithPrivateKey(data: string, privateKey: string) {
+  if (data === "") {
+    return "";
+  }
+
+  const key = bs58.decode(privateKey);
+  const messageWithNonceAsUint8Array = naclUtil.decodeBase64(data);
+  const nonce = messageWithNonceAsUint8Array.slice(0, nacl.secretbox.nonceLength);
+  const message = messageWithNonceAsUint8Array.slice(
+    nacl.secretbox.nonceLength,
+    messageWithNonceAsUint8Array.length,
+  );
+  try {
+    const decrypted = nacl.secretbox.open(message, nonce, key);
+    if (!decrypted) {
+      return ""
+    }
+    return naclUtil.encodeUTF8(decrypted);
+  } catch (error) {
+    console.log("Error decrypting message", error);
+  }
+
+}
+
 
 // Encrypt data using the public key
 export function encryptData(data: string): string {
@@ -200,7 +235,6 @@ export const decryptPrivateKey = (
 };
 
 
-
 // TODO: move to AES-CBC mode
 export const saveKeys = (seed: string, encryptionKey: string | undefined) => {
   if (!encryptionKey) {
@@ -254,3 +288,14 @@ export const copyToClipboard = (textToCopy: string) => {
 export const ValidateSeedPhrase = (seedPhrase: string) => {
   return bip39.validateMnemonic(seedPhrase);
 }
+
+export const getKeys = () => {
+  const pbk = sessionStorage.getItem('pbk')
+  const pk = sessionStorage.getItem('pk')
+  const decryptedPrivateKey = decryptPrivateKey(pk || "", process.env.NEXT_PUBLIC_ENCRYPTION_KEY || "")
+  const decryptPublicKey = decryptPrivateKey(pbk || "", process.env.NEXT_PUBLIC_ENCRYPTION_KEY || "")
+  console.log({ decryptedPrivateKey, decryptPublicKey });
+  return { publicKey: decryptPublicKey, privateKey: decryptedPrivateKey }
+}
+
+

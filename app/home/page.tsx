@@ -1,64 +1,13 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+
 import VaultCard from '@/components/dashboard/vault-card'
 import PasswordDetails from '@/components/dashboard/password-details'
-import { Skeleton } from "@/components/ui/skeleton";
 import { uuid } from 'uuidv4';
 import { Input } from '@/components/ui/input'
 import PasswordEditAdd from "@/components/dashboard/add-edit-password";
-import { decryptData, decryptPrivateKey, encryptData } from "@/lib/utils";
-
-
-const mockData = {
-  vault: {
-    title: 'Main',
-    desc: 'Manage your social media accounts',
-    icon: 'Vault',
-    passwords: [
-      {
-        id: uuid(),
-        title: 'X',
-        url: 'https://twitter.com',
-        userName: 'user',
-        email: 'johdoe@email.com',
-        notes: 'This is a note',
-        type: 'social',
-        password: 'STRONG_PASSWORD',
-      },
-      {
-        id: uuid(),
-        title: 'Facebook',
-        url: 'https://facebook.com',
-        userName: 'user',
-        email: 'johdoe@email.com',
-        notes: 'This is a note',
-        type: 'social',
-        password: 'STRONG_PASSWORD',
-      },
-      {
-        id: uuid(),
-        title: 'Instagram',
-        url: 'https://instagram.com',
-        userName: 'user',
-        email: 'johdoe@email.com',
-        notes: 'This is a note',
-        type: 'social',
-        password: 'STRONG_PASSWORD',
-      },
-      {
-        id: uuid(),
-        title: 'Github',
-        url: 'https://github.com/',
-        userName: 'user',
-        email: 'johdoe@email.com',
-        notes: 'This is a note',
-        password: 'STRONG_PASSWORD',
-        type: 'social',
-      },
-    ],
-  },
-}
+import { decryptDataWithPrivateKey, decryptPrivateKey, getKeys, encryptDataWithPublicKey } from "@/lib/utils";
 
 export interface Link {
   title: string,
@@ -71,15 +20,14 @@ export interface Link {
 }
 
 export default function Home() {
-  const [keys, setKeys] = useState<any>({
-    publicKey: sessionStorage.getItem('pbk') || '',
-    privateKey: sessionStorage.getItem('pk') || '',
-  })
+  const [keys] = useState<any>(() => getKeys())
   const [searchTerm, setSearchterm] = useState('')
   const [currentPassword, setCurrentPassword] = useState<any>({})
   const [data, setData] = useState<any>({})
 
+  // checking if session is valid or not
   useEffect(() => {
+    console.log({ keys });
     if (sessionStorage.getItem('pbk') === null || sessionStorage.getItem('pk') === null) {
       document.cookie = "pk=false";
       window.location.reload();
@@ -166,28 +114,14 @@ export default function Home() {
 
   const encryptAndStoreData = (data: any) => {
     setTimeout(() => {
-      const decryptedPublicKey = decryptPrivateKey(
-        String(sessionStorage.getItem("pbk")) || "",
-        process.env.NEXT_PUBLIC_ENCRYPTION_KEY || ""
-      );
-      const ecryptedData = encryptData(JSON.stringify(data));
+      const ecryptedData = encryptDataWithPublicKey(JSON.stringify(data), keys.publicKey);
       console.log("setting data", { ecryptedData, data })
       localStorage.setItem('data', ecryptedData)
     }, 1000)
   }
 
   useEffect(() => {
-    console.log(
-      sessionStorage.getItem("pbk"),
-      sessionStorage.getItem("pk"),
-      localStorage.getItem("data")
-    );
-    const decryptedPrivateKey = decryptPrivateKey(
-      String(sessionStorage.getItem("pk")) || "",
-      process.env.NEXT_PUBLIC_ENCRYPTION_KEY || ""
-    );
-    console.log({ decryptedPrivateKey })
-    const message = decryptData(localStorage.getItem("data") || "");
+    const message = decryptDataWithPrivateKey(localStorage.getItem("data") || "", keys.privateKey);
     console.log({ message })
     if (message !== "") {
       setData(JSON.parse(message))
