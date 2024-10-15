@@ -1,8 +1,8 @@
 import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
 } from "@/components/ui/accordion"
 import { TITLE_TAILWIND_CLASS } from "@/utils/constants"
 
@@ -42,27 +42,32 @@ const faqs = [
     answer:
       "Simply sign up on the SolPass platform. When you create an account, a 16-seed phrase and a public-private key pair will be generated. Make sure to securely store your private key and seed phrase for future access.",
   },
+  {
+    question: "Where is my passwords stored?",
+    answer:
+      "Your password will be stored on solana chain as soon as we are live on devnet currently its stored locally in your browser.",
+  },
 ];
 
 
 export function AccordionComponent() {
-    return (
-        <div className="flex flex-col w-[70%] lg:w-[50%]">
-            <h2 className={`${TITLE_TAILWIND_CLASS} mt-2 font-semibold text-center tracking-tight dark:text-white text-gray-900`}>
-                Frequently Asked Questions (FAQs)
-            </h2>
-            <Accordion type="single" collapsible className="w-full mt-2 mb-[6rem]">
-                {faqs.map((faq, index) => (
-                    <AccordionItem key={index} value={`item-${index}`}>
-                        <AccordionTrigger>
-                            <span className="font-medium">{faq.question}</span>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                            <p>{faq.answer}</p>
-                        </AccordionContent>
-                    </AccordionItem>
-                ))}
-            </Accordion>
-        </div>
-    )
+  return (
+    <div className="flex flex-col w-[70%] lg:w-[50%]">
+      <h2 className={`${TITLE_TAILWIND_CLASS} mt-2 font-semibold text-center tracking-tight dark:text-white text-gray-900`}>
+        Frequently Asked Questions (FAQs)
+      </h2>
+      <Accordion type="single" collapsible className="w-full mt-2 mb-[6rem]">
+        {faqs.map((faq, index) => (
+          <AccordionItem key={index} value={`item-${index}`}>
+            <AccordionTrigger>
+              <span className="font-medium">{faq.question}</span>
+            </AccordionTrigger>
+            <AccordionContent>
+              <p>{faq.answer}</p>
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </div>
+  )
 }
