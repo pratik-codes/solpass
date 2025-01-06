@@ -1,41 +1,49 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react";
 
-import VaultCard from '@/components/dashboard/vault-card'
-import PasswordDetails from '@/components/dashboard/password-details'
-import { uuid } from 'uuidv4';
-import { Input } from '@/components/ui/input'
+import VaultCard from "@/components/dashboard/vault-card";
+import PasswordDetails from "@/components/dashboard/password-details";
+import { uuid } from "uuidv4";
+import { Input } from "@/components/ui/input";
 import PasswordEditAdd from "@/components/dashboard/add-edit-password";
-import { decryptDataWithPrivateKey, decryptPrivateKey, getKeys, encryptDataWithPublicKey } from "@/lib/utils";
+import {
+  decryptDataWithPrivateKey,
+  decryptPrivateKey,
+  getKeys,
+  encryptDataWithPublicKey,
+} from "@/lib/utils";
 
 export interface Link {
-  title: string,
-  url: string,
-  userName: string,
-  email: string,
-  notes: string,
-  type: string,
-  password: string,
+  title: string;
+  url: string;
+  userName: string;
+  email: string;
+  notes: string;
+  type: string;
+  password: string;
 }
 
 export default function Home() {
-  const [keys] = useState<any>(() => getKeys())
-  const [searchTerm, setSearchterm] = useState('')
-  const [currentPassword, setCurrentPassword] = useState<any>({})
-  const [data, setData] = useState<any>({})
+  const [keys] = useState<any>(() => getKeys());
+  const [searchTerm, setSearchterm] = useState("");
+  const [currentPassword, setCurrentPassword] = useState<any>({});
+  const [data, setData] = useState<any>({});
 
   // checking if session is valid or not
   useEffect(() => {
     console.log({ keys });
-    if (sessionStorage.getItem('pbk') === null || sessionStorage.getItem('pk') === null) {
+    if (
+      sessionStorage.getItem("pbk") === null ||
+      sessionStorage.getItem("pk") === null
+    ) {
       document.cookie = "pk=false";
       window.location.reload();
     }
-  }, [])
+  }, []);
 
   const addLink = (link: Link) => {
-    const oldPasswords = data?.vault?.passwords || []
+    const oldPasswords = data?.vault?.passwords || [];
     const newData = {
       ...data,
       vault: {
@@ -56,8 +64,8 @@ export default function Home() {
       },
     };
     setData(newData);
-    encryptAndStoreData(newData)
-  }
+    encryptAndStoreData(newData);
+  };
 
   const editLink = (id: string, link: Link) => {
     const oldVault = data?.vault || {};
@@ -83,9 +91,9 @@ export default function Home() {
       },
     };
     setData(newData);
-    setCurrentPassword({ ...currentPassword, ...link })
+    setCurrentPassword({ ...currentPassword, ...link });
     encryptAndStoreData(newData);
-  }
+  };
 
   const deleteLink = (id: string) => {
     const newData = {
@@ -93,40 +101,46 @@ export default function Home() {
       vault: {
         ...data.vault,
         passwords: data.vault.passwords.filter(
-          (password: any) => password.id !== id
+          (password: any) => password.id !== id,
         ),
       },
     };
     setData(newData);
     if (currentPassword.id === id) {
-      setCurrentPassword({})
+      setCurrentPassword({});
     }
     encryptAndStoreData(newData);
-  }
+  };
 
   const setCurrentPasswordHandler = (id: string) => {
     const selectedPassword = data.vault.passwords.find(
-      (password: any) => password.id === id
+      (password: any) => password.id === id,
     );
 
-    setCurrentPassword({ ...selectedPassword })
-  }
+    setCurrentPassword({ ...selectedPassword });
+  };
 
   const encryptAndStoreData = (data: any) => {
     setTimeout(() => {
-      const ecryptedData = encryptDataWithPublicKey(JSON.stringify(data), keys.publicKey);
-      console.log("setting data", { ecryptedData, data })
-      localStorage.setItem('data', ecryptedData)
-    }, 1000)
-  }
+      const ecryptedData = encryptDataWithPublicKey(
+        JSON.stringify(data),
+        keys.publicKey,
+      );
+      console.log("setting data", { ecryptedData, data });
+      localStorage.setItem("data", ecryptedData);
+    }, 1000);
+  };
 
   useEffect(() => {
-    const message = decryptDataWithPrivateKey(localStorage.getItem("data") || "", keys.privateKey);
-    console.log({ message })
+    const message = decryptDataWithPrivateKey(
+      localStorage.getItem("data") || "",
+      keys.privateKey,
+    );
+    console.log({ message });
     if (message !== "") {
-      setData(JSON.parse(message))
+      setData(JSON.parse(message));
     }
-  }, [])
+  }, []);
 
   return (
     <div className="flex h-full">
@@ -158,7 +172,7 @@ export default function Home() {
                   vault.email
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase()) ||
-                  vault.url.toLowerCase().includes(searchTerm.toLowerCase())
+                  vault.url.toLowerCase().includes(searchTerm.toLowerCase()),
               )
               .map((vault: any, index: any) => (
                 <VaultCard
