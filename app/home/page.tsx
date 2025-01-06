@@ -132,12 +132,12 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const message = decryptDataWithPrivateKey(
+    const message: any = decryptDataWithPrivateKey(
       localStorage.getItem("data") || "",
       keys.privateKey,
     );
     console.log({ message });
-    if (message !== "") {
+    if (message != "") {
       setData(JSON.parse(message));
     }
   }, []);
