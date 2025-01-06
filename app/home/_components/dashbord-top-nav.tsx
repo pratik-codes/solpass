@@ -17,7 +17,7 @@ import { Banknote, Folder, HomeIcon, Settings } from "lucide-react";
 import Link from "next/link";
 import { ReactNode } from "react";
 import Image from "next/image";
-import IconImage from "@/assets/icon.png";
+import IconImage from "@/assets/favicon.png";
 
 export default function DashboardTopNav({ children }: { children: ReactNode }) {
   return (

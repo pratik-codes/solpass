@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@clerk/nextjs";
 import { Dialog, DialogClose } from "@radix-ui/react-dialog";
 import Image from "next/image";
-import IconImage from "@/assets/icon.png";
+import IconImage from "@/assets/favicon.png";
 
 const components: { title: string; href: string; description: string }[] = [
     {
@@ -93,7 +93,7 @@ export default function NavBar() {
                                     alt="Logo"
                                     width={35}
                                     height={35}
-                                    className="mr-2"
+                                    className="mr-2 rounded-full border border-2 mb-1"
                                 />
                                 SolPass
                             </div>
