@@ -11,6 +11,7 @@ import {
   encryptData,
   validatePin,
   ValidateSeedPhrase,
+  getKeys,
 } from "@/lib/utils";
 import { toast } from "sonner";
 import { Clipboard } from "lucide-react";
@@ -60,7 +61,7 @@ export default function AnonyomousAuth({ type }: { type: string }) {
   };
 
   // function that handles the pin additin on setup page 
-  const PinSuccess = (e: any) => {
+  const PinSuccess =async  (e: any) => {
     e.preventDefault();
     const isOtpValid = pin !== "" && pin.length === 6;
     if (!isOtpValid) {
@@ -78,9 +79,28 @@ export default function AnonyomousAuth({ type }: { type: string }) {
     // save the pin
     localStorage.setItem("pin", encryptedPin);
 
+    const {publicKey}= getKeys()
+
+    console.log(publicKey,"Hithesh")
+
+    const res = await fetch("http://localhost:3000/api/createAnanymous", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                publicKey: publicKey,
+                payedAdress: "YourPayedAddressHere",
+                deposited: false
+            })
+        });
+    const data =await   res.json()
+    console.log(data)
+
+
     toast("signup succeded");
 
-    setStep("done");
+   setStep("done");
   };
 
   // as the name suggests its the login handler

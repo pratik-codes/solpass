@@ -5,7 +5,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  // directUrl = env("DIRECT_URL")
 }
 
 model user {
@@ -70,4 +70,14 @@ model invoices {
   status          String
   email           String
   user_id         String?
+}
+
+
+model  ananymous {
+  id      Int      @id @default(autoincrement())
+  created_time DateTime @default(now())
+  publicKey        String @unique
+  payedAdress   String?   
+  deposited     Boolean @default(false)
+
 }
