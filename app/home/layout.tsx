@@ -47,10 +47,14 @@ export function Popup() {
   const { connection } = useConnection();
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-md">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
-        <h2 className="text-xl font-bold mb-4">To Start using!!</h2>
-        <p>Transfer two solana.</p>
+    <div className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-md z-50">
+      <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-8 rounded-xl shadow-2xl w-96 text-center border border-slate-200">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">Ready to Start!</h2>
+        
+        <div className="mb-6 p-4 bg-amber-50 rounded-lg border border-amber-100">
+          <p className="text-gray-700">Transfer two SOL to continue.</p>
+        </div>
+        
         <button
           // @ts-ignore
           onClick={() =>
@@ -62,9 +66,9 @@ export function Popup() {
               connection,
             })
           }
-          className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
+          className="mt-4 px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg font-medium shadow-md hover:from-red-600 hover:to-red-700 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
         >
-          Close
+          Continue
         </button>
       </div>
     </div>
