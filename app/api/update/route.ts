@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 export async function POST(req: Request) {
     try {
         const { publicKey, deposited } = await req.json();
+        console.log(publicKey)
 
         // Validate request body
       

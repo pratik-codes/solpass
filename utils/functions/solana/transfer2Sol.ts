@@ -38,13 +38,13 @@ export const transfer2Sol = async ({ publicKey, signMessage, sendTransaction, co
         const signature = await sendTransaction(transaction, connection);
           await fetch('/api/update', {
             method: 'POST',
-            body: JSON.stringify({ publicKey: PublicKey, deposited: true }),
+            body: JSON.stringify({ publicKey: publicKey, deposited: true }),
             headers: {
                 'Content-Type': 'application/json',
             },
           })
           console.log('Transaction sent! Signature:', signature);
-        //   window.location.reload()
+        window.location.reload()
        }
     } catch (error) {
         console.error("Transaction failed", error);
