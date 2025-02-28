@@ -47,30 +47,31 @@ export function Popup() {
   const { connection } = useConnection();
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-md z-50">
-      <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-8 rounded-xl shadow-2xl w-96 text-center border border-slate-200">
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">Ready to Start!</h2>
-        
-        <div className="mb-6 p-4 bg-amber-50 rounded-lg border border-amber-100">
-          <p className="text-gray-700">Transfer two SOL to continue.</p>
-        </div>
-        
-        <button
-          // @ts-ignore
-          onClick={() =>
-            transfer2Sol({
-              publicKey,
-              //@ts-ignore
-              signMessage,
-              sendTransaction,
-              connection,
-            })
-          }
-          className="mt-4 px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg font-medium shadow-md hover:from-red-600 hover:to-red-700 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
-        >
-          Continue
-        </button>
+    <div className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-lg z-50">
+    <div className="bg-black/40 backdrop-blur-md p-8 rounded-xl shadow-2xl w-96 text-center border border-white/20">
+      <h2 className="text-2xl font-bold mb-4 text-white">Ready to Start!</h2>
+      
+      <div className="mb-6 p-4 bg-white/10 rounded-lg border border-white/10">
+        <p className="text-white">Transfer two SOL to continue.</p>
       </div>
+      
+      <button
+        // @ts-ignore
+        onClick={() =>
+          transfer2Sol({
+            publicKey,
+            //@ts-ignore
+            signMessage,
+            sendTransaction,
+            connection,
+          })
+        }
+        className="mt-4 px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg font-medium shadow-md hover:from-red-600 hover:to-red-700 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50"
+      >
+        Continue
+      </button>
     </div>
+  </div>
+  
   );
 }
